@@ -1,0 +1,15 @@
+numpy
+pandas
+pymatgen
+spglib
+torch
+gpytorch
+botorch
+scikit-learn
+scipy
+matplotlib
+seaborn
+networkx
+pyro-ppl
+POT
+wandb

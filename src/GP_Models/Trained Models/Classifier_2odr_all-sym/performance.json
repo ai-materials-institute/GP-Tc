@@ -1,0 +1,12 @@
+{
+    "test_acc": 0.8102697998259356,
+    "train_acc": 0.8314435237679896,
+    "test_recall_sc": 0.9578454332552693,
+    "test_precision_sc": 0.818,
+    "test_recall_nonsc": 0.38305084745762713,
+    "test_precision_nonsc": 0.7583892617449665,
+    "train_recall_sc": 0.9597255369928401,
+    "train_precision_sc": 0.8345006485084306,
+    "train_recall_nonsc": 0.4829821717990275,
+    "train_precision_nonsc": 0.8153214774281806
+}
