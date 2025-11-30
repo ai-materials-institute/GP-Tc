@@ -66,10 +66,12 @@ from torch.utils.data import TensorDataset, DataLoader, Dataset
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 
-
+# Project imports
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(BASE_DIR, "sc_train_gp-main"))
 
 #%% Read data
-with open('/Users/omrile/Downloads/ML4SC/regression_data_histogram&symmetry.pkl', 'rb') as f:
+with open(os.path.join(BASE_DIR, "sc_train_gp-main/data/regression_data_histogram&symmetry.pkl"), 'rb') as f:
     loaded_data = pickle.load(f)
     X = loaded_data['histogram_features']
     y = loaded_data['Tc']
