@@ -126,6 +126,11 @@ Ensure you have the following Python packages installed:
 
 1.  **Regression**:
     *   The `GP_Regression_pred.py` script hardcodes `Hist_Keep_Idxs = [13, 18, 26, 30]`.
+    *   These indices correspond to the following 2nd-order graphlet histogram features:
+        - **13**: Electron Affinity (EA)
+        - **18**: Atomic Weight Mean (AWM)
+        - **26**: Column Mean (CM)
+        - **30**: Bond Length (BL)
     *   When training your regression model, you **must** use these same indices via the `--list_of_hist_features_to_use 13 18 26 30` argument.
     *   If you change the features during training, you must manually update `Hist_Keep_Idxs` in `GP_Regression_pred.py` to match.
 
