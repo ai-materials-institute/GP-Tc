@@ -110,7 +110,6 @@ See [`src/GP_Models/sc_train_gp-main/README.md`](src/GP_Models/sc_train_gp-main/
 │
 ├── src/                             # Source code
 │   ├── predict_single_cif.py       # 🔮 Single CIF prediction (CLI)
-│   ├── GPTcPrediction.py           # 🌐 Streamlit web app for predictions
 │   ├── SplitGraphletSymmetryProcessor.py   # Core graphlet + symmetry processor
 │   ├── PYGraphlets.py              # Graphlet construction library
 │   ├── ParallelRunner.py           # Parallel processing utilities
@@ -142,7 +141,6 @@ See [`src/GP_Models/sc_train_gp-main/README.md`](src/GP_Models/sc_train_gp-main/
 - `torch`
 - `gpytorch`
 - `scikit-learn`
-- `streamlit` (for web interface)
 
 ### Installation
 ```bash
