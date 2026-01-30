@@ -30,26 +30,7 @@ The output includes:
 - **Classification**: Probability of being a superconductor (0-1) with uncertainty
 - **Regression**: Predicted critical temperature (Tc in K) with uncertainty
 
-### Option 2: Web Interface (Streamlit App)
-
-For an interactive browser-based interface:
-
-```bash
-cd src
-
-# Start the web app
-streamlit run GPTcPrediction.py --server.port 8502
-
-# Then open http://localhost:8502 in your browser
-```
-
-**Features:**
-- Drag-and-drop CIF upload
-- Visual results display
-- Classification probability and regression Tc with uncertainties
-- Professional, publication-ready interface
-
-### Option 3: Python API (Programmatic Use)
+### Option 2: Python API (Programmatic Use)
 
 For integration into your own scripts:
 
