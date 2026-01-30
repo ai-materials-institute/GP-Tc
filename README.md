@@ -86,9 +86,7 @@ See [`src/GP_Models/README.md`](src/GP_Models/README.md) for the complete workfl
 │   └── README.md                   # Feature generation documentation
 │
 ├── src/                             # Source code
-│   ├── BatchGraphletSymmetryProcessor.py   # Batch processing utilities
-│   ├── GraphletSymmetryProcessor.py        # Core graphlet processor
-│   ├── SplitGraphletSymmetryProcessor.py   # Split output processor
+│   ├── SplitGraphletSymmetryProcessor.py   # Core graphlet + symmetry processor
 │   ├── PYGraphlets.py              # Graphlet construction library
 │   ├── ParallelRunner.py           # Parallel processing utilities
 │   ├── ProgressBar.py              # Progress tracking

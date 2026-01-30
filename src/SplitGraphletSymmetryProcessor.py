@@ -26,7 +26,7 @@ Aaditya Panigrahi
 
 from __future__ import annotations
 
-__all__ = ["Config", "SymmetryFeatureExtractor", "ICSDGraphletProcessor"]
+__all__ = ["Config", "SymmetryFeatureExtractor", "ICSDGraphletProcessor", "BatchGraphletRunner", "extract_icsd_id", "load_bins_from_config"]
 __version__ = "0.11.7"
 
 # -------------------- standard deps --------------------
@@ -35,6 +35,7 @@ import os
 import pickle
 import warnings
 import re
+import traceback
 from typing import Any, Dict, Optional, Tuple, List, Union
 
 import numpy as np
@@ -462,3 +463,129 @@ class ICSDGraphletProcessor:
         """Human-readable summary string with origin and status."""
         status = "ok" if self.ok else f"error={type(self.error).__name__}" if self.error else "not-ready"
         return f"<ICSDGraphletProcessor from=cif status={status}>"
+
+
+# ============================================================
+# Batch runner class
+# ============================================================
+class BatchGraphletRunner:
+    """
+    Batch runner for ICSDGraphletProcessor (sequential processing).
+
+    For parallel processing, use ParallelRunner with Feature_Maker.py instead.
+
+    Parameters
+    ----------
+    out_dir : str, optional
+        Directory to save output pickles. Default: "../output".
+    bin_clas_path : str, optional
+        Pickle with classification 2D bin centers (expects key "bin_centers_list").
+    bin_reg_path : str, optional
+        Pickle with regression 2D bin centers (expects key "bin_centers_list").
+    atomic_radii_json : str, optional
+        Path to atomic radii JSON. Default: "../config/atomic_radii.json".
+    atomic_features_json : str, optional
+        Path to per-element features JSON. Default: "../config/Filtered_atomic_features.json".
+    excel_mapping_xls : str, optional
+        Path to Excel mapping for symmetry features. Default: "../config/Space_group.xls".
+    excel_sheet : str or int, optional
+        Sheet name/index for the Excel mapping. Default: "Sheet3".
+    """
+
+    def __init__(
+        self,
+        out_dir: str = "../output",
+        bin_clas_path: str = "../config/bin_centers_classification.pkl",
+        bin_reg_path: str = "../config/bin_centers_regression.pkl",
+        atomic_radii_json: str = "../config/atomic_radii.json",
+        atomic_features_json: str = "../config/Filtered_atomic_features.json",
+        excel_mapping_xls: str = "../config/Space_group.xls",
+        excel_sheet: Optional[str] = "Sheet3",
+    ):
+        self.out_dir = out_dir
+        self.bin_clas_path = bin_clas_path
+        self.bin_reg_path = bin_reg_path
+        self.atomic_radii_json = atomic_radii_json
+        self.atomic_features_json = atomic_features_json
+        self.excel_mapping_xls = excel_mapping_xls
+        self.excel_sheet = excel_sheet
+
+        os.makedirs(self.out_dir, exist_ok=True)
+        self._require_files(
+            [
+                self.bin_clas_path,
+                self.bin_reg_path,
+                self.atomic_radii_json,
+                self.atomic_features_json,
+                self.excel_mapping_xls,
+            ]
+        )
+        self.bin_clas, self.bin_reg, self.feature_names = self._load_bins(self.bin_clas_path, self.bin_reg_path)
+        assert len(self.feature_names) == len(self.bin_clas), \
+            f"feature_names ({len(self.feature_names)}) must match classification bins ({len(self.bin_clas)})."
+
+    # ---------- public API ----------
+
+    def process(self, cif_list: List[str]) -> Dict[str, str]:
+        """
+        Process a list of CIF files and save <name>_hist.pkl for each.
+
+        Parameters
+        ----------
+        cif_list : list of str
+            Paths to CIF files.
+
+        Returns
+        -------
+        dict
+            Mapping cif_path -> "success" or error string.
+        """
+        results: Dict[str, str] = {}
+        for cif_path in cif_list:
+            name = os.path.splitext(os.path.basename(cif_path))[0]
+            out_pkl = os.path.join(self.out_dir, f"{name}_hist.pkl")
+            try:
+                self._require_files([cif_path])
+                proc = ICSDGraphletProcessor(
+                    cif_file=cif_path,
+                    bin_centers_clas_2d=self.bin_clas,
+                    bin_centers_reg_2d=self.bin_reg,
+                    feature_names=self.feature_names,
+                    excel_file=self.excel_mapping_xls,
+                    sheet_name=self.excel_sheet,
+                    atomic_radii_path=self.atomic_radii_json,
+                    atomic_features_path=self.atomic_features_json,
+                )
+                if not getattr(proc, "ok", False):
+                    raise proc.error if getattr(proc, "error", None) else RuntimeError(
+                        "ICSDGraphletProcessor initialization failed."
+                    )
+                proc.pickle_histogram(out_pkl)
+                print(f"Saved: {out_pkl}")
+                results[cif_path] = "success"
+            except Exception as e:
+                print(f"Failed for {cif_path}: {e}")
+                traceback.print_exc(limit=1)
+                results[cif_path] = repr(e)
+        print("\nAll done.")
+        return results
+
+    # ---------- helpers ----------
+
+    @staticmethod
+    def _load_bins(bin_clas_path: str, bin_reg_path: str):
+        """Load bins and feature names using exact keys."""
+        with open(bin_clas_path, "rb") as f:
+            clas_obj = pickle.load(f)
+        with open(bin_reg_path, "rb") as f:
+            reg_obj = pickle.load(f)
+        bin_clas = clas_obj["bin_centers_list"]
+        bin_reg = reg_obj["bin_centers_list"]
+        feature_names = clas_obj["histogram_feature_names"]
+        return bin_clas, bin_reg, feature_names
+
+    @staticmethod
+    def _require_files(paths: List[str]):
+        missing = [p for p in paths if not os.path.exists(p)]
+        if missing:
+            raise FileNotFoundError("Missing file(s):\n  " + "\n  ".join(missing))
