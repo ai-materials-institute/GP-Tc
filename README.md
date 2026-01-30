@@ -26,22 +26,9 @@ python predict_single_cif.py /path/to/your/structure.cif
 python predict_single_cif.py /path/to/your/structure.cif --json
 ```
 
-**Example Output:**
-```
-==================================================
-GP-Tc Prediction Results
-==================================================
-Formula:               YBa2Cu3O7
-==================================================
-Classification (SC?):
-  Probability:         0.9823
-  Uncertainty (std):   0.0412
-==================================================
-Regression (Tc):
-  Predicted Tc:        92.15 K
-  Uncertainty (std):   8.34 K
-==================================================
-```
+The output includes:
+- **Classification**: Probability of being a superconductor (0-1) with uncertainty
+- **Regression**: Predicted critical temperature (Tc in K) with uncertainty
 
 ### Option 2: Web Interface (Streamlit App)
 
