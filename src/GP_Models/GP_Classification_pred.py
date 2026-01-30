@@ -39,7 +39,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 n_batches_emd_kernel = 10
 n_ind_pts = 1024
 
-def load_trained_class_gp_and_scaler(Training_Data_Path = os.path.join(BASE_DIR, "sc_train_gp-main/data/classification_data_3DSCnonsc_labeled.pkl"),
+def load_trained_class_gp_and_scaler(Training_Data_Path = os.path.join(BASE_DIR, "../../data/classification_data_3DSCnonsc_labeled.pkl"),
                                      Histogram_Feature_Key = "X_all",
                                      Label_Key = "label",
                                      Symmetry_Key = "symm_features",

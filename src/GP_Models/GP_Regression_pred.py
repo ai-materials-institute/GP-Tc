@@ -36,7 +36,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 n_batches_emd_kernel = 10
 Hist_Keep_Idxs = [13, 18, 26, 30]  # matches your original indices
 
-def load_trained_reg_gp_and_scaler(Training_Data_Path = os.path.join(BASE_DIR, "sc_train_gp-main/data/regression_data_histogram&symmetry.pkl"),
+def load_trained_reg_gp_and_scaler(Training_Data_Path = os.path.join(BASE_DIR, "../../data/regression_data_histogram&symmetry.pkl"),
                                    Histogram_Feature_Key = "histogram_features",
                                    Target_Key = "Tc",
                                    Symmetry_Key = "symmetry_features",
