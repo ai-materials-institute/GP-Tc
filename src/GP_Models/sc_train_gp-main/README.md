@@ -52,7 +52,7 @@ cd scripts
 
 python general_example_gp_regression.py \
     --save_data_dir ../save_model_data/gp_regression_outputs_v1 \
-    --path_to_data_file "../data/regression_data_histogram&symmetry.pkl" \
+    --path_to_data_file "../../../data/regression_data_histogram&symmetry.pkl" \
     --n_epochs 32 \
     --list_of_symm_features_to_use 0 1 2 3 \
     --list_of_hist_features_to_use 0 1 2 
@@ -65,7 +65,7 @@ python general_example_gp_regression.py \
 ```bash
 python general_example_gp_regression.py \
     --save_data_dir ../save_model_data/test_regression_symm_only \
-    --path_to_data_file "../data/regression_data_histogram&symmetry.pkl" \
+    --path_to_data_file "../../../data/regression_data_histogram&symmetry.pkl" \
     --list_of_symm_features_to_use 0 1 5 \
     --n_epochs 2
 ```
@@ -74,7 +74,7 @@ python general_example_gp_regression.py \
 ```bash
 python general_example_gp_regression.py \
     --save_data_dir ../save_model_data/test_regression_hist_only \
-    --path_to_data_file "../data/regression_data_histogram&symmetry.pkl" \
+    --path_to_data_file "../../../data/regression_data_histogram&symmetry.pkl" \
     --list_of_hist_features_to_use 2 4 \
     --n_epochs 2
 ```
@@ -83,7 +83,7 @@ python general_example_gp_regression.py \
 ```bash
 python general_example_gp_regression.py \
     --save_data_dir ../save_model_data/test_regression_both \
-    --path_to_data_file "../data/regression_data_histogram&symmetry.pkl" \
+    --path_to_data_file "../../../data/regression_data_histogram&symmetry.pkl" \
     --list_of_symm_features_to_use 0 1 8 \
     --list_of_hist_features_to_use 0 11 24 \
     --n_epochs 2
@@ -156,7 +156,7 @@ cd scripts
 
 python general_example_gp_classification.py \
     --save_data_dir ../save_model_data/gp_classification_outputs_v1 \
-    --path_to_data_file "../data/classification_data_histogram&symmetry.pkl" \
+    --path_to_data_file "../../../data/classification_data_histogram&symmetry.pkl" \
     --list_of_symm_features_to_use 0 1 8 \
     --list_of_hist_features_to_use 10 11 12 16 \
     --n_epochs 32 \

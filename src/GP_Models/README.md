@@ -18,7 +18,7 @@ cd sc_train_gp-main/scripts
 
 python general_example_gp_regression.py \
     --save_data_dir "../../Trained Models/Regressor_4-2odr_all-sym" \
-    --path_to_data_file "../data/regression_data_histogram&symmetry.pkl" \
+    --path_to_data_file "../../../data/regression_data_histogram&symmetry.pkl" \
     --hist_features_key "histogram_features" \
     --labels_key "Tc" \
     --symm_features_key "symmetry_features" \
@@ -35,7 +35,7 @@ cd sc_train_gp-main/scripts
 
 python general_example_gp_classification.py \
     --save_data_dir "../../Trained Models/Classifier_2odr_all-sym" \
-    --path_to_data_file "../data/classification_data_3DSCnonsc_labeled.pkl" \
+    --path_to_data_file "../../../data/classification_data_3DSCnonsc_labeled.pkl" \
     --hist_features_key "X_all" \
     --labels_key "label" \
     --symm_features_key "symm_features" \
@@ -85,7 +85,7 @@ The workflow relies on specific data locations for both training and prediction.
 
 ### Training Data
 The training scripts expect data files (pickles) containing the training set (features and labels).
-*   **Location**: `sc_train_gp-main/data/`
+*   **Location**: `../../data/` (top-level data directory)
 *   **Files**:
     *   `regression_data_histogram&symmetry.pkl` (for regression)
     *   `classification_data_3DSCnonsc_labeled.pkl` (for classification)
@@ -106,8 +106,7 @@ GP_Models/
 │   ├── Regressor_.../          # Saved regression model files
 │   └── Classifier_.../         # Saved classification model files
 └── sc_train_gp-main/           # Submodule for model training
-    ├── scripts/                # Training scripts
-    └── data/                   # Training data
+    └── scripts/                # Training scripts
 ```
 
 ## Prerequisites

@@ -40,14 +40,14 @@ cd src/GP_Models/sc_train_gp-main/scripts
 # Train regression model (e.g., for Tc prediction)
 python general_example_gp_regression.py \
     --save_data_dir "../../Trained Models/Regressor_4-2odr_all-sym" \
-    --path_to_data_file "../data/regression_data_histogram&symmetry.pkl" \
+    --path_to_data_file "../../../data/regression_data_histogram&symmetry.pkl" \
     --list_of_hist_features_to_use 13 18 26 30 \
     --n_epochs 32
 
 # Train classification model (superconductor vs. non-superconductor)
 python general_example_gp_classification.py \
     --save_data_dir "../../Trained Models/Classifier_2odr_all-sym" \
-    --path_to_data_file "../data/classification_data_3DSCnonsc_labeled.pkl" \
+    --path_to_data_file "../../../data/classification_data_3DSCnonsc_labeled.pkl" \
     --n_epochs 32 \
     --use_oversampling True
 ```
@@ -100,7 +100,9 @@ See [`src/GP_Models/README.md`](src/GP_Models/README.md) for the complete workfl
 │       ├── sc_train_gp-main/       # Training framework
 │       └── README.md               # GP workflow documentation
 │
-└── data/                            # Data directory (user-provided)
+└── data/                            # Data directory
+    ├── classification_data_3DSCnonsc_labeled.pkl  # Training data for classification
+    ├── regression_data_histogram&symmetry.pkl     # Training data for regression
     ├── ICSD/
     │   └── CIFS/                   # Input CIF files
     └── Pickled_ICSD_Histograms/    # Pre-computed graphlets (optional)
