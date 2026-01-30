@@ -97,6 +97,7 @@ See [`src/GP_Models/sc_train_gp-main/README.md`](src/GP_Models/sc_train_gp-main/
 
 ```
 .
+├── FEATURE_INDEX_MAPPING.md         # 📋 Feature index to name mapping
 ├── config/                          # Configuration files
 │   ├── atomic_radii.json           # Atomic radii for graphlet construction
 │   ├── Filtered_atomic_features.json  # Element features
@@ -154,6 +155,8 @@ pip install -r requirements.txt
 - **2-site graphlets**: Bond lengths and pair features
 - **3-site graphlets**: Triplet angles and geometric descriptors
 - **Histogram features**: Fixed-bin 2D histograms using Earth Mover's Distance (EMD)
+
+> 📋 See [FEATURE_INDEX_MAPPING.md](FEATURE_INDEX_MAPPING.md) for the complete list of 67 graphlet features and 11 symmetry features with their indices and descriptions.
 
 ### Symmetry Features
 - Point group symmetry descriptors

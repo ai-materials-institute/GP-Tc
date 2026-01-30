@@ -37,3 +37,5 @@ The script creates two subdirectories in `OUT_ROOT`:
 - `Graphlet_Data/`: Contains pickle files with the full graphlet objects.
 
 A manifest file (`manifest_cif.pkl` or `manifest_pickle.pkl`) is also saved in `OUT_ROOT` summarizing the processing results.
+
+> 📋 See [../FEATURE_INDEX_MAPPING.md](../FEATURE_INDEX_MAPPING.md) for the complete mapping of the 67 graphlet features and 11 symmetry features to their physical properties.

@@ -123,19 +123,21 @@ Ensure you have the following Python packages installed:
 
 **Crucial**: The features used to train the model **MUST** match the features used during prediction.
 
+> 📋 See [../../FEATURE_INDEX_MAPPING.md](../../FEATURE_INDEX_MAPPING.md) for the complete mapping of feature indices to physical properties.
+
 1.  **Regression**:
     *   The `GP_Regression_pred.py` script hardcodes `Hist_Keep_Idxs = [13, 18, 26, 30]`.
     *   These indices correspond to the following 2nd-order graphlet histogram features:
-        - **13**: Electron Affinity (EA)
-        - **18**: Atomic Weight Mean (AWM)
-        - **26**: Column Mean (CM)
-        - **30**: Bond Length (BL)
+        - **13**: `EA_abs_2_ord` - Electron Affinity absolute difference
+        - **18**: `AtomicWeight_mean_2_ord` - Atomic Weight mean
+        - **26**: `Column_mean_2_ord` - Periodic table column mean
+        - **30**: `bond_len_2_ord` - Bond length
     *   When training your regression model, you **must** use these same indices via the `--list_of_hist_features_to_use 13 18 26 30` argument.
     *   If you change the features during training, you must manually update `Hist_Keep_Idxs` in `GP_Regression_pred.py` to match.
 
 2.  **Classification**:
     *   The `GP_Classification_pred.py` script extracts a specific slice of histogram features (indices `10:31`).
-    *   Ensure your trained classification model expects this specific subset of features.
+    *   Ensure your trained classification model expects this specific subset of features (all 2nd-order features).
 
 ## Alternative: Neural Network Regression
 
