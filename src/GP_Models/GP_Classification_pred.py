@@ -89,7 +89,7 @@ def load_trained_class_gp_and_scaler(Training_Data_Path = os.path.join(BASE_DIR,
     y_all  = np.array(loaded[Label_Key])         # (N,)
     S_all  = np.array(loaded[Symmetry_Key]) # (N, 11)
 
-    # keep last 2 as "special" and split on the rest (same as your script)
+    # keep last 2 as "special" and split on the rest
     X_special, y_special, S_special = X_all[-2:], y_all[-2:], S_all[-2:]
     X_base, y_base, S_base = X_all[:-2], y_all[:-2], S_all[:-2]
 
