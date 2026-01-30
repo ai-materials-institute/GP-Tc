@@ -13,3 +13,4 @@ networkx
 pyro-ppl
 POT
 wandb
+streamlit

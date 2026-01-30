@@ -10,9 +10,80 @@ The pipeline consists of three main stages:
 2. **Model Training** (`src/GP_Models/sc_train_gp-main/`): Train GP models on labeled data
 3. **Prediction** (`src/GP_Models/`): Apply trained models to new materials
 
-## Quick Start
+## Quick Start: Making Predictions
 
-### 1. Generate Features from CIF Files
+### Option 1: Command-Line Prediction (Single CIF)
+
+The fastest way to predict superconductivity for a single material:
+
+```bash
+cd src
+
+# Basic usage - outputs formatted results
+python predict_single_cif.py /path/to/your/structure.cif
+
+# JSON output for programmatic use
+python predict_single_cif.py /path/to/your/structure.cif --json
+```
+
+**Example Output:**
+```
+==================================================
+GP-Tc Prediction Results
+==================================================
+Formula:               YBa2Cu3O7
+==================================================
+Classification (SC?):
+  Probability:         0.9823
+  Uncertainty (std):   0.0412
+==================================================
+Regression (Tc):
+  Predicted Tc:        92.15 K
+  Uncertainty (std):   8.34 K
+==================================================
+```
+
+### Option 2: Web Interface (Streamlit App)
+
+For an interactive browser-based interface:
+
+```bash
+cd src
+
+# Start the web app
+streamlit run GPTcPrediction.py --server.port 8502
+
+# Then open http://localhost:8502 in your browser
+```
+
+**Features:**
+- Drag-and-drop CIF upload
+- Visual results display
+- Classification probability and regression Tc with uncertainties
+- Professional, publication-ready interface
+
+### Option 3: Python API (Programmatic Use)
+
+For integration into your own scripts:
+
+```python
+from predict_single_cif import predict_single_cif
+
+# Make predictions
+result = predict_single_cif("/path/to/structure.cif")
+
+print(f"Formula: {result['reduced_formula']}")
+print(f"SC Probability: {result['classification_prob']:.3f}")
+print(f"Predicted Tc: {result['regression_mean']:.1f} K")
+```
+
+---
+
+## Advanced Usage
+
+### Generate Features from CIF Files (Batch Processing)
+
+For processing many CIF files in parallel:
 
 ```bash
 cd main
@@ -22,7 +93,7 @@ export MODE="CIF"
 export CIF_DIR="/path/to/your/cifs"
 export OUT_ROOT="../ICSD_Features"
 
-# Run feature generation
+# Run parallel feature generation
 python Feature_Maker.py
 ```
 
@@ -32,12 +103,12 @@ python Feature_Maker.py
 
 See [`main/README.md`](main/README.md) for detailed usage.
 
-### 2. Train GP Models
+### Train Your Own GP Models
 
 ```bash
 cd src/GP_Models/sc_train_gp-main/scripts
 
-# Train regression model (e.g., for Tc prediction)
+# Train regression model (for Tc prediction)
 python general_example_gp_regression.py \
     --save_data_dir "../../Trained Models/Regressor_4-2odr_all-sym" \
     --path_to_data_file "../../../data/regression_data_histogram&symmetry.pkl" \
@@ -53,22 +124,6 @@ python general_example_gp_classification.py \
 ```
 
 See [`src/GP_Models/sc_train_gp-main/README.md`](src/GP_Models/sc_train_gp-main/README.md) for all training options.
-
-### 3. Make Predictions
-
-```bash
-cd src/GP_Models
-
-# Regression predictions (e.g., Tc values)
-python GP_Regression_pred.py
-
-# Classification predictions (superconductor probability)
-python GP_Classification_pred.py
-```
-
-Outputs are saved as `gp_regression_preds.pkl` and `gp_classification_preds.pkl`.
-
-See [`src/GP_Models/README.md`](src/GP_Models/README.md) for the complete workflow.
 
 ## Repository Structure
 
@@ -86,15 +141,17 @@ See [`src/GP_Models/README.md`](src/GP_Models/README.md) for the complete workfl
 │   └── README.md                   # Feature generation documentation
 │
 ├── src/                             # Source code
+│   ├── predict_single_cif.py       # 🔮 Single CIF prediction (CLI)
+│   ├── GPTcPrediction.py           # 🌐 Streamlit web app for predictions
 │   ├── SplitGraphletSymmetryProcessor.py   # Core graphlet + symmetry processor
 │   ├── PYGraphlets.py              # Graphlet construction library
 │   ├── ParallelRunner.py           # Parallel processing utilities
 │   ├── ProgressBar.py              # Progress tracking
 │   │
 │   └── GP_Models/                  # GP model training & prediction
-│       ├── GP_Regression_pred.py   # Regression prediction script
-│       ├── GP_Classification_pred.py  # Classification prediction script
-│       ├── Trained Models/         # Saved model checkpoints
+│       ├── GP_Regression_pred.py   # Regression prediction module
+│       ├── GP_Classification_pred.py  # Classification prediction module
+│       ├── Trained Models/         # Pre-trained model checkpoints
 │       ├── sc_train_gp-main/       # Training framework
 │       └── README.md               # GP workflow documentation
 │
@@ -117,6 +174,7 @@ See [`src/GP_Models/README.md`](src/GP_Models/README.md) for the complete workfl
 - `torch`
 - `gpytorch`
 - `scikit-learn`
+- `streamlit` (for web interface)
 
 ### Installation
 ```bash
