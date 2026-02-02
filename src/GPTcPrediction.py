@@ -68,7 +68,6 @@ st.markdown("""
         --secondary-mint: #4ECDC4;
         --accent-gold: #F2B705;
         --accent-amber: #E5A700;
-        --dark-charcoal: #1E2D2F;
         --light-mint: #E8F4F2;
         --light-ice: #F4FAFA;
         --text-dark: #1A2E35;
@@ -340,6 +339,72 @@ st.markdown("""
         }
         .metric-value {
             font-size: 1.25rem;
+        }
+    }
+    
+    /* Dark mode support - follows system preference */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --light-mint: #1E2D2F;
+            --light-ice: #162022;
+            --text-dark: #E8F4F2;
+            --text-muted: #9CB5BC;
+        }
+        
+        .stApp {
+            background: linear-gradient(180deg, #162022 0%, #1E2D2F 100%) !important;
+        }
+        
+        .result-card {
+            background: rgba(30, 45, 47, 0.9) !important;
+            border: 1px solid rgba(78, 205, 196, 0.2);
+        }
+        
+        .result-card h3 {
+            color: var(--secondary-mint) !important;
+        }
+        
+        .metric-label {
+            color: var(--text-muted) !important;
+        }
+        
+        .metric-value {
+            color: var(--text-dark) !important;
+        }
+        
+        .metric-container {
+            border-bottom-color: rgba(78, 205, 196, 0.15) !important;
+        }
+        
+        .metric-container:hover {
+            background-color: rgba(1, 168, 135, 0.1) !important;
+        }
+        
+        [data-testid="stSidebar"] {
+            background: linear-gradient(180deg, #1E2D2F 0%, #162022 100%) !important;
+            border-right-color: rgba(78, 205, 196, 0.2) !important;
+        }
+        
+        [data-testid="stSidebar"] h1, 
+        [data-testid="stSidebar"] h2, 
+        [data-testid="stSidebar"] h3 {
+            color: var(--secondary-mint) !important;
+        }
+        
+        [data-testid="stFileUploader"] {
+            background: rgba(30, 45, 47, 0.7) !important;
+            border-color: var(--primary-teal) !important;
+        }
+        
+        .streamlit-expanderHeader {
+            background: rgba(11, 79, 108, 0.2) !important;
+            color: var(--secondary-mint) !important;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, rgba(11, 79, 108, 0.2) 0%, rgba(26, 122, 140, 0.15) 100%) !important;
+            border-color: rgba(78, 205, 196, 0.3) !important;
+            color: var(--text-dark) !important;
         }
     }
 </style>
