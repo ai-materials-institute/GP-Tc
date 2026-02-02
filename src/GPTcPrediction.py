@@ -54,52 +54,120 @@ st.set_page_config(
 # Set max upload size to 1 MB (must be done via config file or CLI)
 # Note: Run with: streamlit run GPTcPrediction.py --server.maxUploadSize=1
 
-# Custom CSS for professional styling
+# Custom CSS for professional styling with Yellow/Blue/Green scientific palette
 st.markdown("""
 <style>
-    /* Main container styling */
-    .main .block-container {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
+    /* Import premium fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+    
+    /* Color palette variables */
+    :root {
+        --primary-deep-teal: #0B4F6C;
+        --primary-teal: #1A7A8C;
+        --secondary-emerald: #01A887;
+        --secondary-mint: #4ECDC4;
+        --accent-gold: #F2B705;
+        --accent-amber: #E5A700;
+        --dark-charcoal: #1E2D2F;
+        --light-mint: #E8F4F2;
+        --light-ice: #F4FAFA;
+        --text-dark: #1A2E35;
+        --text-muted: #5A7A82;
     }
     
-    /* Header styling */
+    /* Global font styling */
+    html, body, [class*="css"] {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    /* Main container styling */
+    .main .block-container {
+        padding-top: 1.5rem;
+        padding-bottom: 2rem;
+        max-width: 1100px;
+    }
+    
+    /* Stremlit background */
+    .stApp {
+        background: linear-gradient(180deg, var(--light-ice) 0%, var(--light-mint) 100%);
+    }
+    
+    /* Header styling - Glassmorphism effect */
     .main-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 2rem;
-        border-radius: 12px;
+        background: linear-gradient(135deg, var(--primary-deep-teal) 0%, var(--primary-teal) 50%, var(--secondary-emerald) 100%);
+        padding: 2.5rem 2rem;
+        border-radius: 20px;
         margin-bottom: 2rem;
         color: white;
         text-align: center;
+        box-shadow: 0 8px 32px rgba(11, 79, 108, 0.25);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .main-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+        animation: shimmer 8s ease-in-out infinite;
+    }
+    
+    @keyframes shimmer {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(25%, 25%); }
     }
     
     .main-header h1 {
         margin: 0;
-        font-size: 2.5rem;
+        font-size: 2.8rem;
         font-weight: 700;
+        letter-spacing: -0.5px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        position: relative;
+        z-index: 1;
     }
     
     .main-header p {
-        margin: 0.5rem 0 0 0;
-        opacity: 0.9;
-        font-size: 1.1rem;
+        margin: 0.75rem 0 0 0;
+        opacity: 0.95;
+        font-size: 1.15rem;
+        font-weight: 400;
+        position: relative;
+        z-index: 1;
     }
     
-    /* Result cards */
+    /* Result cards - Premium glassmorphism */
     .result-card {
-        background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
-        padding: 1.5rem;
-        border-radius: 12px;
-        border-left: 4px solid #667eea;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        min-height: 160px;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 1.75rem 2rem;
+        border-radius: 16px;
+        border: 1px solid rgba(11, 79, 108, 0.1);
+        border-left: 5px solid var(--secondary-emerald);
+        margin-bottom: 1.25rem;
+        box-shadow: 0 4px 24px rgba(11, 79, 108, 0.08), 0 1px 3px rgba(0,0,0,0.04);
+        min-height: 180px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .result-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 32px rgba(11, 79, 108, 0.12), 0 2px 6px rgba(0,0,0,0.06);
     }
     
     .result-card h3 {
-        margin: 0 0 1rem 0;
-        color: #343a40;
-        font-size: 1.2rem;
+        margin: 0 0 1.25rem 0;
+        color: var(--primary-deep-teal);
+        font-size: 1.3rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
     
     /* Metric styling */
@@ -107,8 +175,17 @@ st.markdown("""
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0.75rem 0;
-        border-bottom: 1px solid #dee2e6;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(11, 79, 108, 0.08);
+        transition: background-color 0.2s ease;
+    }
+    
+    .metric-container:hover {
+        background-color: rgba(1, 168, 135, 0.04);
+        margin: 0 -0.5rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        border-radius: 8px;
     }
     
     .metric-container:last-child {
@@ -116,42 +193,154 @@ st.markdown("""
     }
     
     .metric-label {
-        color: #6c757d;
+        color: var(--text-muted);
         font-size: 0.95rem;
+        font-weight: 500;
+        letter-spacing: 0.2px;
     }
     
     .metric-value {
-        font-size: 1.4rem;
-        font-weight: 600;
-        color: #343a40;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        font-family: 'JetBrains Mono', monospace;
     }
     
-    /* Formula badge */
+    .metric-value.highlight {
+        color: var(--secondary-emerald);
+    }
+    
+    /* Formula badge - Premium with gold accent */
     .formula-badge {
-        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        background: linear-gradient(135deg, var(--secondary-emerald) 0%, var(--secondary-mint) 100%);
         color: white;
-        padding: 0.75rem 1.5rem;
+        padding: 0.85rem 2rem;
         border-radius: 50px;
-        font-size: 1.2rem;
+        font-size: 1.35rem;
         font-weight: 600;
+        font-family: 'JetBrains Mono', monospace;
         display: inline-block;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 3px 10px rgba(40, 167, 69, 0.3);
+        margin-bottom: 1.75rem;
+        box-shadow: 0 4px 16px rgba(1, 168, 135, 0.35);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 2px solid rgba(255,255,255,0.2);
+    }
+    
+    .formula-badge:hover {
+        transform: scale(1.02);
+        box-shadow: 0 6px 24px rgba(1, 168, 135, 0.45);
+    }
+    
+    /* Gold accent badge variant */
+    .gold-accent {
+        background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-amber) 100%);
+        box-shadow: 0 4px 16px rgba(242, 183, 5, 0.35);
     }
     
     /* Sidebar styling */
-    .css-1d391kg {
-        padding-top: 1rem;
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, var(--light-ice) 0%, #ffffff 100%);
+        border-right: 1px solid rgba(11, 79, 108, 0.1);
     }
     
-    /* Hide Streamlit branding */
-    #MainMenu {visibility: hidden;}
+    [data-testid="stSidebar"] .block-container {
+        padding-top: 2rem;
+    }
+    
+    /* Sidebar headers */
+    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
+        color: var(--primary-deep-teal);
+        font-weight: 600;
+    }
+    
+    /* File uploader styling */
+    [data-testid="stFileUploader"] {
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 12px;
+        padding: 1rem;
+        border: 2px dashed var(--secondary-mint);
+        transition: border-color 0.3s ease, background 0.3s ease;
+    }
+    
+    [data-testid="stFileUploader"]:hover {
+        border-color: var(--secondary-emerald);
+        background: rgba(1, 168, 135, 0.05);
+    }
+    
+    /* Select boxes */
+    [data-testid="stSelectbox"] > div > div {
+        border-color: var(--secondary-mint);
+        border-radius: 8px;
+    }
+    
+    /* Expander styling */
+    .streamlit-expanderHeader {
+        background: rgba(11, 79, 108, 0.05);
+        border-radius: 8px;
+        color: var(--primary-deep-teal);
+        font-weight: 500;
+    }
+    
+    /* Spinner styling */
+    .stSpinner > div > div {
+        border-top-color: var(--secondary-emerald) !important;
+    }
+    
+    /* Hide Streamlit footer branding only */
     footer {visibility: hidden;}
     
     /* Success message styling */
     .stSuccess {
-        background-color: #d4edda;
-        border-color: #c3e6cb;
+        background: linear-gradient(135deg, rgba(1, 168, 135, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
+        border: 1px solid var(--secondary-emerald);
+        border-radius: 12px;
+        color: var(--primary-deep-teal);
+    }
+    
+    /* Error message styling */
+    .stError {
+        border-radius: 12px;
+    }
+    
+    /* Info box styling */
+    .info-box {
+        background: linear-gradient(135deg, rgba(11, 79, 108, 0.08) 0%, rgba(26, 122, 140, 0.05) 100%);
+        border: 1px solid rgba(11, 79, 108, 0.15);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        margin: 1rem 0;
+        color: var(--text-dark);
+    }
+    
+    /* Probability indicator */
+    .prob-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .prob-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    
+    .prob-high { background: var(--secondary-emerald); }
+    .prob-medium { background: var(--accent-gold); }
+    .prob-low { background: var(--primary-teal); }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .main-header h1 {
+            font-size: 2rem;
+        }
+        .result-card {
+            padding: 1.25rem;
+        }
+        .metric-value {
+            font-size: 1.25rem;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
