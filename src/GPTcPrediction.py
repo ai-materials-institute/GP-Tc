@@ -356,8 +356,9 @@ st.markdown("""
         }
         
         .result-card {
-            background: rgba(30, 45, 47, 0.9) !important;
-            border: 1px solid rgba(78, 205, 196, 0.2);
+            background: rgba(45, 65, 70, 0.95) !important;
+            border: 2px solid var(--secondary-emerald) !important;
+            box-shadow: 0 4px 24px rgba(1, 168, 135, 0.25), 0 0 0 1px rgba(78, 205, 196, 0.1) !important;
         }
         
         .result-card h3 {
