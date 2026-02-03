@@ -285,8 +285,9 @@ st.markdown("""
         border-top-color: var(--secondary-emerald) !important;
     }
     
-    /* Hide Streamlit footer branding only */
+    /* Hide Streamlit footer and top toolbar, keep sidebar menu */
     footer {visibility: hidden;}
+    header[data-testid="stHeader"] {background: transparent !important;}
     
     /* Success message styling */
     .stSuccess {
