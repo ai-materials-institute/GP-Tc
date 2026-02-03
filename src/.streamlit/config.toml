@@ -1,0 +1,16 @@
+[theme]
+# Primary accent uses the Cobalt Blue from the Histogram/GP headers
+primaryColor = "#284678"
+# Workspace background uses the Panel C 'Insight' White
+backgroundColor = "#FFFFFF"
+# Sidebar uses the Panel B 'Featurization' Grey for clear separation
+secondaryBackgroundColor = "#F5F5F5"
+textColor = "#1E293B"
+font = "sans serif"
+
+[server]
+maxUploadSize = 1
+
+[client]
+# Hide the toolbar with rerun/always rerun options
+toolbarMode = "minimal"

@@ -54,24 +54,39 @@ st.set_page_config(
 # Set max upload size to 1 MB (must be done via config file or CLI)
 # Note: Run with: streamlit run GPTcPrediction.py --server.maxUploadSize=1
 
-# Custom CSS for professional styling with Yellow/Blue/Green scientific palette
+# Custom CSS for Antigravity Design - Functional gradients from research schematic
 st.markdown("""
 <style>
     /* Import premium fonts */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
     
-    /* Color palette variables */
+    /* GLOBAL: Antigravity Schematic Palette */
     :root {
-        --primary-deep-teal: #0B4F6C;
-        --primary-teal: #1A7A8C;
-        --secondary-emerald: #01A887;
-        --secondary-mint: #4ECDC4;
-        --accent-gold: #F2B705;
-        --accent-amber: #E5A700;
-        --light-mint: #E8F4F2;
-        --light-ice: #F4FAFA;
-        --text-dark: #1A2E35;
-        --text-muted: #5A7A82;
+        /* Panel A: Data Fusion / Curation - Lavender-Blue */
+        --bg-curation: #E6EBFF;
+        --bg-curation-end: #C8D1E6;
+        /* Panel B: Featurization */
+        --bg-featurization: #F5F5F5;
+        --bg-featurization-end: #EBEBEB;
+        /* Panel C: Insight */
+        --bg-insight: #FFFFFF;
+        /* Text: Cobalt Blue */
+        --text-main: #284678;
+        --text-muted: #64748B;
+        /* Ground Truth Red gradient */
+        --truth-red: #BE1E2D;
+        --truth-red-end: #901622;
+        /* Order-based gradients for graphlet complexity */
+        --order1: #F5E18C;
+        --order1-end: #E6C962;
+        --order2: #96C3A0;
+        --order2-end: #76A581;
+        --order3: #64AFAF;
+        --order3-end: #4D8E8E;
+        /* Borders and shadows */
+        --border-light: #D1D9E6;
+        --shadow-soft: rgba(40, 70, 120, 0.08);
+        --shadow-medium: rgba(40, 70, 120, 0.12);
     }
     
     /* Global font styling */
@@ -86,87 +101,72 @@ st.markdown("""
         max-width: 1100px;
     }
     
-    /* Stremlit background */
+    /* App background */
     .stApp {
-        background: linear-gradient(180deg, var(--light-ice) 0%, var(--light-mint) 100%);
+        background: linear-gradient(180deg, #FAFBFF 0%, var(--bg-insight) 100%);
     }
     
-    /* Header styling - Glassmorphism effect */
+    /* Header: Panel A - Teal Gradient (Translucent) */
     .main-header {
-        background: linear-gradient(135deg, var(--primary-deep-teal) 0%, var(--primary-teal) 50%, var(--secondary-emerald) 100%);
-        padding: 2.5rem 2rem;
-        border-radius: 20px;
+        background: linear-gradient(90deg, rgba(0, 167, 157, 0.65) 0%, rgba(20, 190, 180, 0.65) 100%);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        color: #FFFFFF;
+        padding: 2rem 2.5rem;
+        border-radius: 12px;
+        border-bottom: 2px solid rgba(0, 95, 89, 0.5);
         margin-bottom: 2rem;
-        color: white;
         text-align: center;
-        box-shadow: 0 8px 32px rgba(11, 79, 108, 0.25);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .main-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
-        animation: shimmer 8s ease-in-out infinite;
-    }
-    
-    @keyframes shimmer {
-        0%, 100% { transform: translate(0, 0); }
-        50% { transform: translate(25%, 25%); }
+        box-shadow: 0 4px 20px rgba(0, 167, 157, 0.15);
     }
     
     .main-header h1 {
         margin: 0;
-        font-size: 2.8rem;
+        font-size: 2.4rem;
         font-weight: 700;
         letter-spacing: -0.5px;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        position: relative;
-        z-index: 1;
+        color: #FFFFFF;
     }
     
     .main-header p {
         margin: 0.75rem 0 0 0;
-        opacity: 0.95;
-        font-size: 1.15rem;
+        font-size: 1.1rem;
         font-weight: 400;
-        position: relative;
-        z-index: 1;
+        color: rgba(255, 255, 255, 0.9);
+        opacity: 1;
     }
     
-    /* Result cards - Premium glassmorphism */
+    /* Result cards: Top border with teal gradient */
     .result-card {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        background: linear-gradient(145deg, #ffffff, #f0f2f6);
         padding: 1.75rem 2rem;
-        border-radius: 16px;
-        border: 1px solid rgba(11, 79, 108, 0.1);
-        border-left: 5px solid var(--secondary-emerald);
-        margin-bottom: 1.25rem;
-        box-shadow: 0 4px 24px rgba(11, 79, 108, 0.08), 0 1px 3px rgba(0,0,0,0.04);
-        min-height: 180px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 12px;
+        border: 1px solid var(--border-light);
+        border-top: 5px solid var(--order3);
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        min-height: 160px;
+        transition: all 0.3s ease;
     }
     
     .result-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 32px rgba(11, 79, 108, 0.12), 0 2px 6px rgba(0,0,0,0.06);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
     }
     
     .result-card h3 {
-        margin: 0 0 1.25rem 0;
-        color: var(--primary-deep-teal);
-        font-size: 1.3rem;
+        margin: 0 0 1rem 0;
+        color: var(--text-main);
+        font-size: 1.2rem;
         font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+    }
+    
+    /* Streamlit native metrics: Top border styling */
+    div[data-testid="stMetric"] {
+        background: linear-gradient(145deg, #ffffff, #f0f2f6);
+        border-radius: 12px;
+        padding: 20px;
+        border-top: 5px solid var(--order3);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     }
     
     /* Metric styling */
@@ -174,17 +174,8 @@ st.markdown("""
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 1rem 0;
-        border-bottom: 1px solid rgba(11, 79, 108, 0.08);
-        transition: background-color 0.2s ease;
-    }
-    
-    .metric-container:hover {
-        background-color: rgba(1, 168, 135, 0.04);
-        margin: 0 -0.5rem;
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-        border-radius: 8px;
+        padding: 0.85rem 0;
+        border-bottom: 1px solid var(--border-light);
     }
     
     .metric-container:last-child {
@@ -195,51 +186,53 @@ st.markdown("""
         color: var(--text-muted);
         font-size: 0.95rem;
         font-weight: 500;
-        letter-spacing: 0.2px;
     }
     
     .metric-value {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
         font-weight: 700;
-        color: var(--text-dark);
+        color: var(--text-main);
         font-family: 'JetBrains Mono', monospace;
     }
     
-    .metric-value.highlight {
-        color: var(--secondary-emerald);
+    /* Ground Truth / True Tc: Red gradient text */
+    .truth-val {
+        background: linear-gradient(90deg, var(--truth-red) 0%, var(--truth-red-end) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: bold;
     }
     
-    /* Formula badge - Premium with gold accent */
+    /* Formula badge: 2nd to 3rd order gradient (Green to Teal) */
     .formula-badge {
-        background: linear-gradient(135deg, var(--secondary-emerald) 0%, var(--secondary-mint) 100%);
-        color: white;
+        background: linear-gradient(135deg, var(--order2) 0%, var(--order3) 100%);
+        color: var(--text-main);
         padding: 0.85rem 2rem;
         border-radius: 50px;
-        font-size: 1.35rem;
+        font-size: 1.25rem;
         font-weight: 600;
         font-family: 'JetBrains Mono', monospace;
         display: inline-block;
-        margin-bottom: 1.75rem;
-        box-shadow: 0 4px 16px rgba(1, 168, 135, 0.35);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: 2px solid rgba(255,255,255,0.2);
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 12px rgba(100, 175, 175, 0.3);
     }
     
-    .formula-badge:hover {
-        transform: scale(1.02);
-        box-shadow: 0 6px 24px rgba(1, 168, 135, 0.45);
+    /* Order-based card gradient variants */
+    .order1-card {
+        border-image: linear-gradient(to bottom, var(--order1), var(--order1-end)) 1;
+    }
+    .order2-card {
+        border-image: linear-gradient(to bottom, var(--order2), var(--order2-end)) 1;
+    }
+    .order3-card {
+        border-image: linear-gradient(to bottom, var(--order3), var(--order3-end)) 1;
     }
     
-    /* Gold accent badge variant */
-    .gold-accent {
-        background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-amber) 100%);
-        box-shadow: 0 4px 16px rgba(242, 183, 5, 0.35);
-    }
-    
-    /* Sidebar styling */
+    /* Sidebar: Featurization Grey */
     [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, var(--light-ice) 0%, #ffffff 100%);
-        border-right: 1px solid rgba(11, 79, 108, 0.1);
+        background: linear-gradient(180deg, var(--bg-featurization) 0%, var(--bg-featurization-end) 100%);
+        border-right: 1px solid var(--border-light);
     }
     
     [data-testid="stSidebar"] .block-container {
@@ -247,166 +240,254 @@ st.markdown("""
     }
     
     /* Sidebar headers */
-    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
-        color: var(--primary-deep-teal);
+    [data-testid="stSidebar"] h1, 
+    [data-testid="stSidebar"] h2, 
+    [data-testid="stSidebar"] h3 {
+        color: var(--text-main);
         font-weight: 600;
     }
     
     /* File uploader styling */
     [data-testid="stFileUploader"] {
-        background: rgba(255, 255, 255, 0.7);
+        background: var(--bg-insight);
         border-radius: 12px;
         padding: 1rem;
-        border: 2px dashed var(--secondary-mint);
-        transition: border-color 0.3s ease, background 0.3s ease;
+        border: 2px dashed var(--order3);
     }
     
     [data-testid="stFileUploader"]:hover {
-        border-color: var(--secondary-emerald);
-        background: rgba(1, 168, 135, 0.05);
+        border-color: var(--text-main);
+        background: rgba(230, 235, 255, 0.3);
     }
     
     /* Select boxes */
     [data-testid="stSelectbox"] > div > div {
-        border-color: var(--secondary-mint);
+        border-color: var(--border-light);
         border-radius: 8px;
     }
     
     /* Expander styling */
     .streamlit-expanderHeader {
-        background: rgba(11, 79, 108, 0.05);
+        background: var(--bg-featurization);
         border-radius: 8px;
-        color: var(--primary-deep-teal);
+        color: var(--text-main);
         font-weight: 500;
     }
     
     /* Spinner styling */
     .stSpinner > div > div {
-        border-top-color: var(--secondary-emerald) !important;
+        border-top-color: var(--order3) !important;
     }
     
-    /* Hide Streamlit footer and top toolbar, keep sidebar menu */
+    /* Hide Streamlit footer and make header transparent */
     footer {visibility: hidden;}
     header[data-testid="stHeader"] {background: transparent !important;}
     
     /* Success message styling */
     .stSuccess {
-        background: linear-gradient(135deg, rgba(1, 168, 135, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
-        border: 1px solid var(--secondary-emerald);
+        background: linear-gradient(135deg, rgba(150, 195, 160, 0.2) 0%, rgba(150, 195, 160, 0.1) 100%);
+        border: 1px solid var(--order2);
         border-radius: 12px;
-        color: var(--primary-deep-teal);
+        color: var(--text-main);
     }
     
     /* Error message styling */
     .stError {
         border-radius: 12px;
+        border-left: 4px solid var(--truth-red);
     }
-    
-    /* Info box styling */
-    .info-box {
-        background: linear-gradient(135deg, rgba(11, 79, 108, 0.08) 0%, rgba(26, 122, 140, 0.05) 100%);
-        border: 1px solid rgba(11, 79, 108, 0.15);
-        border-radius: 12px;
-        padding: 1rem 1.25rem;
-        margin: 1rem 0;
-        color: var(--text-dark);
-    }
-    
-    /* Probability indicator */
-    .prob-indicator {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .prob-dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        display: inline-block;
-    }
-    
-    .prob-high { background: var(--secondary-emerald); }
-    .prob-medium { background: var(--accent-gold); }
-    .prob-low { background: var(--primary-teal); }
     
     /* Responsive adjustments */
     @media (max-width: 768px) {
         .main-header h1 {
-            font-size: 2rem;
+            font-size: 1.8rem;
+        }
+        .main-header {
+            padding: 1.5rem;
         }
         .result-card {
             padding: 1.25rem;
         }
         .metric-value {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
         }
     }
     
-    /* Dark mode support - follows system preference */
+    /* DARK MODE: Antigravity Dark Gradients */
     @media (prefers-color-scheme: dark) {
         :root {
-            --light-mint: #1E2D2F;
-            --light-ice: #162022;
-            --text-dark: #E8F4F2;
-            --text-muted: #9CB5BC;
+            /* Dark mode gradients per Gemini spec */
+            --bg-curation: #1E2442;
+            --bg-curation-end: #2D3664;
+            --bg-featurization: #1E293B;
+            --bg-featurization-end: #162032;
+            --bg-insight: #0F172A;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --truth-red: #EF4444;
+            --truth-red-end: #DC2626;
+            /* Dark mode order gradients */
+            --order1: #B4A048;
+            --order1-end: #8E7D32;
+            --order2: #3E6B48;
+            --order2-end: #2D4F35;
+            --order3: #246B6B;
+            --order3-end: #1A4F4F;
+            /* For bright accents in dark mode */
+            --order3-bright: #2DD4BF;
+            --order3-bright-end: #14B8A6;
+            --border-light: #334155;
+            --shadow-soft: rgba(0, 0, 0, 0.2);
+            --shadow-medium: rgba(0, 0, 0, 0.3);
         }
         
         .stApp {
-            background: linear-gradient(180deg, #162022 0%, #1E2D2F 100%) !important;
+            background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%) !important;
+        }
+        
+        .main-header {
+            background: linear-gradient(90deg, var(--bg-curation) 0%, var(--bg-curation-end) 100%) !important;
+            border-bottom-color: var(--order3-bright) !important;
         }
         
         .result-card {
-            background: rgba(45, 65, 70, 0.95) !important;
-            border: 2px solid var(--secondary-emerald) !important;
-            box-shadow: 0 4px 24px rgba(1, 168, 135, 0.25), 0 0 0 1px rgba(78, 205, 196, 0.1) !important;
+            background: linear-gradient(145deg, #0F172A, #1E293B) !important;
+            border: 1px solid var(--border-light) !important;
+            border-top: 5px solid var(--order3-bright) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
         }
         
-        .result-card h3 {
-            color: var(--secondary-mint) !important;
+        div[data-testid="stMetric"] {
+            background: linear-gradient(145deg, #0F172A, #1E293B) !important;
+            border-top: 5px solid var(--order3-bright) !important;
+            border-radius: 12px !important;
         }
         
-        .metric-label {
-            color: var(--text-muted) !important;
+        .formula-badge {
+            background: linear-gradient(135deg, #4ADE80 0%, #2DD4BF 100%) !important;
+            color: #0F172A !important;
+            box-shadow: 0 4px 16px rgba(45, 212, 191, 0.3) !important;
         }
         
-        .metric-value {
-            color: var(--text-dark) !important;
+        .truth-val {
+            background: linear-gradient(90deg, #EF4444 0%, #DC2626 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
         }
         
-        .metric-container {
-            border-bottom-color: rgba(78, 205, 196, 0.15) !important;
+        /* Spinner visible in dark mode - plain and clean */
+        .stSpinner > div > div,
+        .stSpinner > div > div > div,
+        [data-testid="stSpinner"] > div,
+        [data-testid="stSpinner"] > div > div {
+            border-top-color: #FFFFFF !important;
+            border-right-color: rgba(255, 255, 255, 0.3) !important;
+            border-bottom-color: rgba(255, 255, 255, 0.3) !important;
+            border-left-color: rgba(255, 255, 255, 0.3) !important;
         }
         
-        .metric-container:hover {
-            background-color: rgba(1, 168, 135, 0.1) !important;
+        .stSpinner > div,
+        .stSpinner,
+        [data-testid="stSpinner"] {
+            color: var(--text-main) !important;
+        }
+        
+        .stSpinner p,
+        [data-testid="stSpinner"] p {
+            color: var(--text-main) !important;
         }
         
         [data-testid="stSidebar"] {
-            background: linear-gradient(180deg, #1E2D2F 0%, #162022 100%) !important;
-            border-right-color: rgba(78, 205, 196, 0.2) !important;
-        }
-        
-        [data-testid="stSidebar"] h1, 
-        [data-testid="stSidebar"] h2, 
-        [data-testid="stSidebar"] h3 {
-            color: var(--secondary-mint) !important;
+            background: linear-gradient(180deg, var(--bg-featurization) 0%, var(--bg-featurization-end) 100%) !important;
+            border-right-color: var(--border-light) !important;
         }
         
         [data-testid="stFileUploader"] {
-            background: rgba(30, 45, 47, 0.7) !important;
-            border-color: var(--primary-teal) !important;
+            background: var(--bg-featurization) !important;
+            border-color: var(--order3-bright) !important;
+        }
+        
+        [data-testid="stFileUploader"]:hover {
+            background: rgba(45, 212, 191, 0.1) !important;
+        }
+        
+        /* File uploader inner dropzone */
+        [data-testid="stFileUploader"] > div,
+        [data-testid="stFileUploader"] > div > div,
+        [data-testid="stFileUploader"] section,
+        [data-testid="stFileUploader"] section > div,
+        [data-testid="stFileUploadDropzone"],
+        [data-testid="stFileUploadDropzone"] > div {
+            background: var(--bg-featurization) !important;
+            background-color: var(--bg-featurization) !important;
+        }
+        
+        /* File uploader text */
+        [data-testid="stFileUploader"] *,
+        [data-testid="stFileUploader"] label,
+        [data-testid="stFileUploader"] p,
+        [data-testid="stFileUploader"] span,
+        [data-testid="stFileUploader"] small,
+        [data-testid="stFileUploader"] div {
+            color: var(--text-main) !important;
+        }
+        
+        [data-testid="stFileUploader"] button {
+            background-color: var(--bg-curation) !important;
+            color: var(--text-main) !important;
+            border-color: var(--order3-bright) !important;
         }
         
         .streamlit-expanderHeader {
-            background: rgba(11, 79, 108, 0.2) !important;
-            color: var(--secondary-mint) !important;
+            background: linear-gradient(90deg, var(--bg-curation) 0%, var(--bg-featurization) 100%) !important;
+            color: var(--text-main) !important;
         }
         
-        .info-box {
-            background: linear-gradient(135deg, rgba(11, 79, 108, 0.2) 0%, rgba(26, 122, 140, 0.15) 100%) !important;
-            border-color: rgba(78, 205, 196, 0.3) !important;
-            color: var(--text-dark) !important;
+        .stSuccess {
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.15) 0%, rgba(74, 222, 128, 0.05) 100%) !important;
+            border-color: #4ADE80 !important;
+        }
+        
+        /* Text color fixes */
+        .main .block-container,
+        .main .block-container p,
+        .main .block-container span,
+        .main .block-container label,
+        [data-testid="stMarkdownContainer"],
+        [data-testid="stMarkdownContainer"] p,
+        [data-testid="stText"] {
+            color: var(--text-main) !important;
+        }
+        
+        [data-testid="stSidebar"] p,
+        [data-testid="stSidebar"] span,
+        [data-testid="stSidebar"] label,
+        [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {
+            color: var(--text-main) !important;
+        }
+        
+        .result-card h3,
+        .result-card .metric-label {
+            color: var(--text-muted) !important;
+        }
+        
+        .result-card .metric-value {
+            color: var(--text-main) !important;
+        }
+        
+        [data-testid="stSelectbox"] label,
+        [data-testid="stFileUploader"] label {
+            color: var(--text-main) !important;
+        }
+        
+        [data-testid="stSelectbox"] > div > div {
+            background-color: var(--bg-featurization) !important;
+            color: var(--text-main) !important;
+        }
+        
+        hr {
+            border-color: var(--border-light) !important;
         }
     }
 </style>
