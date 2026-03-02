@@ -910,25 +910,29 @@ class Graphlet_AnalyzerFixedBins2D:
     Counting uses the nearest bin center in absolute difference. Values
     outside the range naturally contribute to the first/last center.
     """
-    def __init__(self, graphlet_list, bin_centers_2d, feature_names,
-                 max_order=3, hist_density=False, verbose=False, strict=False):
+    def __init__(self, graphlet_list, bin_centers_2d=None, feature_names=None,
+                 max_order=3, hist_density=False, bin_width_factor=1.0, verbose=False, strict=False):
         self.graphlet_list = graphlet_list
         self.max_order = max_order
         self.hist_density = hist_density
+        self.bin_width_factor = bin_width_factor
         self.verbose = verbose
         self.strict = strict
 
-        bin_centers_2d = np.asarray(bin_centers_2d, dtype=float)
-        if bin_centers_2d.ndim != 2:
-            raise ValueError("bin_centers_2d must be a 2D array of shape (n_features, n_bins).")
-        n_features, _ = bin_centers_2d.shape
-        if not isinstance(feature_names, (list, tuple)) or len(feature_names) != n_features:
-            raise ValueError("length of feature_names must equal the number of rows in bin_centers_2d.")
+        self.fallback_mode = (bin_centers_2d is None)
 
-        # Preserve the order of provided centers (no sorting)
-        self.hist_names = list(feature_names)
-        self._centers = [np.array(bin_centers_2d[i, :], dtype=float) for i in range(n_features)]
-        self._name_to_row = {name: idx for idx, name in enumerate(self.hist_names)}
+        if not self.fallback_mode:
+            bin_centers_2d = np.asarray(bin_centers_2d, dtype=float)
+            if bin_centers_2d.ndim != 2:
+                raise ValueError("bin_centers_2d must be a 2D array of shape (n_features, n_bins).")
+            n_features, _ = bin_centers_2d.shape
+            if not isinstance(feature_names, (list, tuple)) or len(feature_names) != n_features:
+                raise ValueError("length of feature_names must equal the number of rows in bin_centers_2d.")
+
+            # Preserve the order of provided centers (no sorting)
+            self.hist_names = list(feature_names)
+            self._centers = [np.array(bin_centers_2d[i, :], dtype=float) for i in range(n_features)]
+            self._name_to_row = {name: idx for idx, name in enumerate(self.hist_names)}
 
     # ---------- Utilities ----------
     @staticmethod
@@ -1043,6 +1047,9 @@ class Graphlet_AnalyzerFixedBins2D:
             If `strict=True` and a sample contains a feature not present
             in `feature_names`.
         """
+        if self.fallback_mode:
+            return self._dynamic_get_histogram_features()
+            
         n_samples = len(self.graphlet_list)
         n_hists = len(self.hist_names)
         nb_per_hist = [len(c) for c in self._centers] if n_hists > 0 else [0]
@@ -1086,6 +1093,217 @@ class Graphlet_AnalyzerFixedBins2D:
 
         return (
             self.hist_names,
+            hist_array,
+            feat_bin_name_list,
+            feat_bin_value_list,
+            feat_magpie_name_list,
+            feat_magpie_value_list,
+        )
+
+    # ---------- Dynamic Fallback logic exactly from NewPYGraphlets.py ----------
+    def _dynamic_get_bins(self):
+        """
+        Compute histogram bin edges per feature using Freedman–Diaconis.
+
+        Returns
+        -------
+        dict
+            Mapping feature_name -> np.ndarray of bin edges.
+
+        Notes
+        -----
+        Uses Freedman–Diaconis rule when IQR > 0; otherwise falls back to a
+        Sturges-based width. A minimum width of 0.1 is enforced.
+        """
+        def calculate_bin_widths(data):
+            """
+            Calculate the ideal bin width for a histogram (FD/Sturges).
+
+            Parameters
+            ----------
+            data : array-like
+                Sample values for a single feature.
+
+            Returns
+            -------
+            float
+                Computed bin width (after scaling).
+            """
+            n = len(data)
+            if len(np.unique(data)) == 1:
+                return 0.1  # if only one data exist, bin width doesnt matter
+    
+            iqr = np.percentile(data, 75) - np.percentile(data, 25)
+            # Freedman-Diaconis Rule
+            if iqr>0:
+                fd_bin_width = 2 * iqr / np.cbrt(n)
+            else:
+                # using Sturges' rule as a backup
+                sturges_bin_width = (max(data) - min(data)) / (np.log2(n) + 1)
+                fd_bin_width = sturges_bin_width if sturges_bin_width > 0 else 0.1  
+            if fd_bin_width < 0.01:
+                fd_bin_width = 0.1 
+            return fd_bin_width*self.bin_width_factor
+    
+        all_features=defaultdict(list)
+        for graphlet in self.graphlet_list:
+
+            features_dict=self._get_features_dict(graphlet)
+
+            for feature,values in features_dict.items():
+                all_features[feature]+=values
+            
+            
+        bin_ranges={}
+        bins={}
+        for feature, values in all_features.items():
+            
+            min_val=np.min(values)
+            max_val=np.max(values)
+            print(np.array(values).shape)
+            bin_width=calculate_bin_widths(values)
+            bin_ranges[feature]=(min_val,max_val,bin_width)
+            print(f"Feature: {feature}, Min Value: {min_val}, Max Value: {max_val}, Bin Width: {bin_width}")
+
+            bins[feature]=np.arange(min_val-bin_width/2,max_val+3*bin_width/2,bin_width)
+
+        return bins
+
+    def _dynamic_get_histogram_features(self,num_bins:int =None):
+        """
+        Build histograms and magpie-like summaries for all materials (fallback dynamic).
+
+        Parameters
+        ----------
+        num_bins : int or None, optional
+            If provided, the number of bins to use uniformly per feature.
+            If None, use the edges computed by `_dynamic_get_bins()`.
+
+        Returns
+        -------
+        hist_names : list of str
+            Names of histogrammed features.
+        hist_array : np.ndarray
+            Array of shape (n_samples, n_hists, max_nbins, 2). The last
+            axis stores bin midpoints at [:,:,:,0] and bin heights at
+            [:,:,:,1]. Unused slots are padded with -1.
+        feat_bin_name_list : list of list of str
+            Per-sample list of per-bin feature names.
+        feat_bin_value_list : list of list of float
+            Per-sample list of per-bin values (heights).
+        feat_magpie_name_list : list of list of str
+            Per-sample list of "magpie-like" feature names (mean/std).
+        feat_magpie_value_list : list of list of float
+            Per-sample list of mean/std values per feature.
+        """
+        bins = self._dynamic_get_bins()
+       
+        hist_features_dict_list = []
+        magpie_features_dict_list = []
+        
+        nbins = []
+        for graphlet in self.graphlet_list:
+            hist_features = {}
+            magpie_features = {}
+            
+            features_dict = self._get_features_dict(graphlet)
+ 
+            for feature, values in features_dict.items():
+                if num_bins:
+                    rng = (bins[feature][0], bins[feature][-1])
+                    bin_heights, bin_edges = np.histogram(values, bins=num_bins, range=rng, density=self.hist_density)
+                else:
+                    bin_heights, bin_edges = np.histogram(values, bins=bins[feature], density=self.hist_density)
+                        
+                bin_mids = (bin_edges[0:-1] + bin_edges[1:]) * 0.5
+                hist_features[feature] = (bin_mids, bin_heights)
+                nbins.append(len(bin_mids))
+                val_mean, val_std = np.mean(values), np.std(values)
+                cumulants = [1, 2]
+                magpie_features[feature] = (cumulants, [val_mean, val_std])
+                
+            hist_features_dict_list.append(hist_features)
+            magpie_features_dict_list.append(magpie_features)
+            
+        self.hist_features_dict_list=hist_features_dict_list
+        self.magpie_features_dict_list=magpie_features_dict_list
+        self.max_nbins=max(nbins) 
+
+
+        feat_bin_name_list = []
+        feat_bin_value_list = []
+        
+
+        for hist_dict in hist_features_dict_list:
+            feat_bin_name=[]
+            feat_bin_value=[]
+            for feat, (bin_mid,bin_height) in hist_dict.items():
+                feat_bin_name+=[feat+'='+str(i) for i in bin_mid]
+                feat_bin_value+=list(bin_height)
+            
+            feat_bin_name_list.append(feat_bin_name)
+            feat_bin_value_list.append(feat_bin_value)
+        feat_bin_names = feat_bin_name_list[0]
+        sorted_feat_bin_value_list = []
+        for names, vals in zip(feat_bin_name_list, feat_bin_value_list):
+            if names != feat_bin_names:
+                print('feature arrangement changed!!!')
+                indices = [names.index(item) for item in feat_bin_names]
+                sorted_vals = [vals[i] for i in indices]
+                sorted_feat_bin_value_list.append(sorted_vals)
+            else:
+                sorted_feat_bin_value_list.append(vals)
+        feat_bin_name_list = [feat_bin_names] * len(feat_bin_name_list)
+        feat_bin_value_list = sorted_feat_bin_value_list
+
+        feat_magpie_name_list = []
+        feat_magpie_value_list = []
+        for magpie_dict in magpie_features_dict_list:
+            feat_name = []
+            feat_value = []
+            for feat, (cumulant, mean_std) in magpie_dict.items():
+                feat_name += [f"{feat}_cumulant={i}" for i in cumulant]
+                feat_value += list(mean_std)
+            
+            feat_magpie_name_list.append(feat_name)
+            feat_magpie_value_list.append(feat_value)
+        feat_magpie_names = feat_magpie_name_list[0]
+        sorted_feat_magpie_value_list = []
+        for names, vals in zip(feat_magpie_name_list, feat_magpie_value_list):
+            if names != feat_magpie_names:
+                print('magpie feature arrangement changed!!!')
+                indices = [names.index(item) for item in feat_magpie_names]
+                sorted_vals = [vals[i] for i in indices]
+                sorted_feat_magpie_value_list.append(sorted_vals)
+            else:
+                sorted_feat_magpie_value_list.append(vals)
+        feat_magpie_name_list = [feat_magpie_names] * len(feat_magpie_name_list)
+        feat_magpie_value_list = sorted_feat_magpie_value_list
+
+
+
+                
+        
+
+        # Array to store histogram data (bin midpoints and heights)
+        # Shape: (n_samples, n_hists, max_nbins, 2)
+        # 0: bin midpoints, 1: bin heights
+        self.n_samples=len(hist_features_dict_list)
+        hist_names=list(hist_features_dict_list[0].keys()) 
+        self.n_hists=len(hist_names)
+        hist_array=np.full((self.n_samples,self.n_hists,self.max_nbins,2),-1.0,dtype=float)
+
+        for ns,hist_dict in enumerate(hist_features_dict_list):
+            for h_name, (bin_mid,bin_height) in hist_dict.items():
+                nh=hist_names.index(h_name)
+                nbins=len(bin_mid)
+                
+                hist_array[ns,nh,0:nbins,0]=bin_mid
+                hist_array[ns,nh,0:nbins,1]=bin_height
+
+
+        return (
+            hist_names,
             hist_array,
             feat_bin_name_list,
             feat_bin_value_list,
