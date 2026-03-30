@@ -175,12 +175,31 @@ See [`src/precendent_search/README.md`](src/precendent_search/README.md) for set
 
 ### Installation
 ```bash
-pip install -r requirements.txt
+# Create a project-local virtual environment
+uv sync
+
+# Or reuse an existing conda environment, e.g. torchgpu
+conda activate torchgpu
+uv sync --active --inexact
 ```
 
-### Optional API Clients
-- `google-genai` for `src/precendent_search/pred.py`
-- `edison-client` for `src/precendent_search/query_materials_with_edison.py`
+`pyproject.toml` pins the base dependency set to the versions currently installed in the
+`torchgpu` Python 3.11 environment. If you are working inside that CUDA-enabled conda environment,
+`uv sync --active --inexact` is the safer option because it layers the project dependencies onto
+the active environment without aggressively removing conda-managed packages.
+
+### Optional Extras
+- `gemini` for `src/precendent_search/pred.py`
+- `edison` for `src/precendent_search/query_materials_with_edison.py`
+- `advanced-training` for the SAAS / Pyro-based GP training code
+
+Install optional extras when needed:
+
+```bash
+uv sync --extra gemini
+uv sync --extra edison
+uv sync --extra advanced-training
+```
 
 ## Key Features
 

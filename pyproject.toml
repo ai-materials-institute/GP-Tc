@@ -1,0 +1,34 @@
+[project]
+name = "gp-tc"
+version = "0.1.0"
+description = "Superconductivity prediction pipeline using graphlet features, symmetry descriptors, and Gaussian Process models."
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+license = { file = "LICENSE" }
+dependencies = [
+    "numpy==2.0.1",
+    "pandas==2.3.3",
+    "pymatgen==2025.10.7",
+    "spglib==2.6.0",
+    "torch==2.5.1",
+    "gpytorch==1.14.2",
+    "scikit-learn==1.7.2",
+    "scipy==1.16.0",
+    "matplotlib==3.10.6",
+    "seaborn==0.13.2",
+    "networkx==3.5",
+    "POT==0.9.6.post1",
+    "wandb==0.22.3",
+]
+
+[project.optional-dependencies]
+advanced-training = [
+    "botorch==0.16.1",
+    "pyro-ppl==1.9.1",
+]
+gemini = [
+    "google-genai==1.69.0",
+]
+edison = [
+    "edison-client==0.11.0; python_version >= '3.11'",
+]

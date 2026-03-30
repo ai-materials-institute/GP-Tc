@@ -100,19 +100,24 @@ This script (`pred.py`) queries the Google Gemini API to identify related superc
 
 ```bash
 # From the repository root
-pip install -r requirements.txt
-
-# Optional: install the Gemini client explicitly if needed
-uv pip install google-genai
+uv sync --extra gemini
 ```
 
-Or install the dependency directly:
+If you prefer to reuse an existing conda environment such as `torchgpu`, activate it first and let
+`uv` install into the active environment:
 
 ```bash
-uv pip install google-genai
+conda activate torchgpu
+uv sync --active --inexact --extra gemini
 ```
 
 **Note:** This script uses the new [Google Gen AI SDK](https://googleapis.github.io/python-genai/) (`google-genai` package), which is the modern replacement for `google-generativeai`.
+
+For the Edison workflow, install the optional extra from the repository root:
+
+```bash
+uv sync --extra edison
+```
 
 #### 2. Set API Key
 
