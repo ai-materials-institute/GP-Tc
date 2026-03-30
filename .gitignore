@@ -47,6 +47,7 @@ env/
 # Data files - exclude only CIFs
 *.cif
 *.CIF
+!data/Nd0.8Sr0.2NiO2_synth_doped.cif
 
 # Logs and temporary files
 *.log
