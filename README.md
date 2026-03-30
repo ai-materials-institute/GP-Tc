@@ -4,11 +4,12 @@ GP-Tc provides a complete end-to-end pipeline for predicting superconductivity p
 
 ## Overview
 
-The pipeline consists of three main stages:
+The pipeline consists of four main stages:
 
 1. **Feature Generation** (`main/`): Convert CIF files into ML-ready features
 2. **Model Training** (`src/GP_Models/sc_train_gp-main/`): Train GP models on labeled data
 3. **Prediction** (`src/GP_Models/`): Apply trained models to new materials
+4. **Literature Search** (`src/precendent_search/`): Check whether candidate materials already appear in superconductivity literature
 
 ## Quick Start: Making Predictions
 
@@ -93,6 +94,27 @@ python general_example_gp_classification.py \
 
 See [`src/GP_Models/sc_train_gp-main/README.md`](src/GP_Models/sc_train_gp-main/README.md) for all training options.
 
+**Training hardware note:** The GP models were trained on an `NVIDIA RTX A5000 GPU`.
+
+### Search the Literature
+
+For checking whether candidate materials are already reported superconductors:
+
+```bash
+cd src/precendent_search
+
+# Edison PRECEDENT search
+python query_materials_with_edison.py --input your_materials.csv
+
+# Combine Edison outputs into a CSV
+python combine_predictions.py
+
+# Gemini-based follow-up search over combined outputs
+python pred.py --prompt related
+```
+
+See [`src/precendent_search/README.md`](src/precendent_search/README.md) for setup, API keys, prompts, and batch-processing details.
+
 ## Repository Structure
 
 ```
@@ -115,6 +137,12 @@ See [`src/GP_Models/sc_train_gp-main/README.md`](src/GP_Models/sc_train_gp-main/
 │   ├── PYGraphlets.py              # Graphlet construction library
 │   ├── ParallelRunner.py           # Parallel processing utilities
 │   ├── ProgressBar.py              # Progress tracking
+│   │
+│   ├── precendent_search/          # Literature search utilities
+│   │   ├── query_materials_with_edison.py  # Edison PRECEDENT queries
+│   │   ├── pred.py                 # Gemini follow-up prompts
+│   │   ├── combine_predictions.py  # Merge batch outputs into CSV
+│   │   └── README.md               # Literature search documentation
 │   │
 │   └── GP_Models/                  # GP model training & prediction
 │       ├── GP_Regression_pred.py   # Regression prediction module
@@ -147,6 +175,10 @@ See [`src/GP_Models/sc_train_gp-main/README.md`](src/GP_Models/sc_train_gp-main/
 ```bash
 pip install -r requirements.txt
 ```
+
+### Optional API Clients
+- `google-genai` for `src/precendent_search/pred.py`
+- `edison-client` for `src/precendent_search/query_materials_with_edison.py`
 
 ## Key Features
 
@@ -187,6 +219,8 @@ The pipeline supports configuration via environment variables:
 - **Natalie Maus** - GP model training framework
 - **Krishnanand Mallayya** - PYGraphlets library
 - **Omri Lesser** - Neural network regression models
+- **Albert Gong** - Precedent search workflow
+- **Anmol Kabra** - Precedent search workflow
 
 ## Citation
 

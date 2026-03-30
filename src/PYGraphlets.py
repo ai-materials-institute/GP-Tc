@@ -628,12 +628,40 @@ class Graphlet_Analyzer:
         Scale factor applied to the estimated bin width. Default is 1.0.
     hist_density : bool, optional
         If True, histograms are normalized to density. Default is False.
+    bin_centers_2d : np.ndarray or None, optional
+        Optional fixed bin centers of shape (n_features, n_bins). When
+        provided, histogramming uses predefined nearest-center bins.
+    feature_names : list of str or None, optional
+        Feature names corresponding to rows of `bin_centers_2d`.
+    verbose : bool, optional
+        If True, enables additional diagnostics in fixed-bin mode.
+    strict : bool, optional
+        If True, fixed-bin mode raises on unseen features.
     """
-    def __init__(self, graphlet_list,max_order=3,bin_width_factor=1.0,hist_density=False):
+    def __init__(self, graphlet_list,max_order=3,bin_width_factor=1.0,
+                 hist_density=False, bin_centers_2d=None, feature_names=None,
+                 verbose=False, strict=False):
         self.graphlet_list=graphlet_list
         self.max_order=max_order
         self.bin_width_factor=bin_width_factor
         self.hist_density=hist_density
+        self.bin_centers_2d = bin_centers_2d
+        self.feature_names = feature_names
+        self.verbose = verbose
+        self.strict = strict
+        self._fixed_bin_delegate = None
+
+        if bin_centers_2d is not None:
+            self._fixed_bin_delegate = Graphlet_AnalyzerFixedBins2D(
+                graphlet_list=graphlet_list,
+                bin_centers_2d=bin_centers_2d,
+                feature_names=feature_names,
+                max_order=max_order,
+                hist_density=hist_density,
+                bin_width_factor=bin_width_factor,
+                verbose=verbose,
+                strict=strict,
+            )
     
     def get_features_dict(self,graphlet):
         """
@@ -742,8 +770,9 @@ class Graphlet_Analyzer:
         Parameters
         ----------
         num_bins : int or None, optional
-            If provided, the number of bins to use uniformly per feature.
-            If None, use the edges computed by `get_bins()`.
+            Number of equal-width bins to use per feature over the
+            data-driven range from `get_bins()`. Defaults to 20 when not
+            provided.
 
         Returns
         -------
@@ -762,6 +791,14 @@ class Graphlet_Analyzer:
         feat_magpie_value_list : list of list of float
             Per-sample list of mean/std values per feature.
         """
+
+        if self._fixed_bin_delegate is not None:
+            if num_bins is not None:
+                raise ValueError("num_bins cannot be used together with fixed-bin centers.")
+            return self._fixed_bin_delegate.get_histogram_features()
+
+        if num_bins is None:
+            num_bins = 20
 
         bins=self.get_bins()
        
@@ -1176,8 +1213,9 @@ class Graphlet_AnalyzerFixedBins2D:
         Parameters
         ----------
         num_bins : int or None, optional
-            If provided, the number of bins to use uniformly per feature.
-            If None, use the edges computed by `_dynamic_get_bins()`.
+            Number of equal-width bins to use per feature over the
+            data-driven range from `_dynamic_get_bins()`. Defaults to 20
+            when not provided.
 
         Returns
         -------
@@ -1196,6 +1234,9 @@ class Graphlet_AnalyzerFixedBins2D:
         feat_magpie_value_list : list of list of float
             Per-sample list of mean/std values per feature.
         """
+        if num_bins is None:
+            num_bins = 20
+
         bins = self._dynamic_get_bins()
        
         hist_features_dict_list = []
