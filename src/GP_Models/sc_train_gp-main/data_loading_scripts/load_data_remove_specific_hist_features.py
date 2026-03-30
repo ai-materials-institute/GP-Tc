@@ -1,5 +1,6 @@
 import sys 
 sys.path.append("../")
+from path_utils import resolve_replication_data_file
 import numpy as np
 import torch 
 from utils.PYGraphlets import *
@@ -14,7 +15,8 @@ def load_data_without_specified_features(
     also_remove_ord1_features=False,
     symm_features_only=False,
 ):
-    with open(f"../data/{dataset_name}.pkl", "rb") as f:
+    path_to_data = resolve_replication_data_file("data", f"{dataset_name}.pkl")
+    with open(path_to_data, "rb") as f:
         loaded_data = pickle.load(f)
     X_good = loaded_data["X_good"]
     y_good = loaded_data["y_good"]
@@ -56,4 +58,3 @@ def load_data_without_specified_features(
     X_test = X_test.reshape(X_test.size(0), -1)
 
     return X_train, X_test, y_train, y_test, data_shape, n_histogram 
-

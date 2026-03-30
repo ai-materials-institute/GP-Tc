@@ -1,6 +1,7 @@
 import sys 
 sys.path.append("../")
 from constants import DATA_ID_TO_NAME, FOUR_BEST_ORD2_HIST_FEATURES 
+from path_utils import resolve_replication_data_file
 import numpy as np
 import torch 
 from utils.PYGraphlets import *
@@ -22,13 +23,13 @@ def load_data_new_sg_featurization(
 ):
     assert dataset_name in ["good_data_symm_33d_thre1%", "good_data_symm_thre1%"]
 
-    path_to_data_sg = f"../data_new_sg_featurization/{dataset_name}.pkl"
+    path_to_data_sg = resolve_replication_data_file("data_new_sg_featurization", f"{dataset_name}.pkl")
     with open(path_to_data_sg, "rb") as f:
         loaded_data_sg = pickle.load(f)
 
     sg_good = np.array(loaded_data_sg["symm_feature_good"]) # (4325, 33) for 14 / (4325, 11) for 15  (sg features)
 
-    path_to_data = f"../data/good_data_ord2_thre1%_with_symm.pkl"
+    path_to_data = resolve_replication_data_file("data", "good_data_ord2_thre1%_with_symm.pkl")
     with open(path_to_data, "rb") as f:
         loaded_data = pickle.load(f)
     X_good = loaded_data["X_good"][:,0:21,:,:] # (4325, 32, 20, 2) --> (4325, 21, 20, 2) (order 2 hist featurs)
@@ -144,4 +145,3 @@ if __name__ == "__main__":
 # key:mat_good, datatype:<class 'list'>, To np array data shape:(4325,), first item: <class 'str'>, Ag0.002Al0.998
 # key:sg_good, datatype:<class 'list'>, To np array data shape:(4325,), first item: <class 'int'>, 225
 # key:feat_name, datatype:<class 'list'>, To np array data shape:(32,), first item: <class 'str'>, Pauling_EN_mean_2_ord
-

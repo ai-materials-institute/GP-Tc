@@ -1,5 +1,6 @@
 import sys 
 sys.path.append("../")
+from path_utils import resolve_replication_data_file
 import numpy as np
 import torch 
 from utils.PYGraphlets import *
@@ -12,7 +13,8 @@ def load_data_with_only_specified_features(
     device, 
     list_of_features_to_keep="all",
 ):
-    with open(f"../data/{dataset_name}.pkl", "rb") as f:
+    path_to_data = resolve_replication_data_file("data", f"{dataset_name}.pkl")
+    with open(path_to_data, "rb") as f:
         loaded_data = pickle.load(f)
     X_good = loaded_data["X_good"]
     y_good = loaded_data["y_good"]

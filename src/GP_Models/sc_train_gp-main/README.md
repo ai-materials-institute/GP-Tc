@@ -9,6 +9,12 @@ It includes utilities for:
 - Performance evaluation (R², MAE, accuracy, etc.)  
 - Visualization and saving of model outputs  
 
+## Replication
+
+Replication-specific code for the Figure 2 GP regression experiments is organized under `replication/` and reuses the shared GP code in this module instead of duplicating `models/`, `kernels/`, `utils/`, and `constants.py`.
+
+See `src/GP_Models/sc_train_gp-main/replication/README.md` for the local data layout and the exact commands used to reproduce the experiment runs.
+
 ------------------------------------------------------
 
 # Regression Script

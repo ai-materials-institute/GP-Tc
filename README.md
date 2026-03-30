@@ -96,6 +96,8 @@ See [`src/GP_Models/sc_train_gp-main/README.md`](src/GP_Models/sc_train_gp-main/
 
 **Training hardware note:** The GP models were trained on an `NVIDIA RTX A5000 GPU`.
 
+For detailed Figure 2 GP regression replication code and run instructions, see [`src/GP_Models/sc_train_gp-main/replication/README.md`](src/GP_Models/sc_train_gp-main/replication/README.md).
+
 ### Search the Literature
 
 For checking whether candidate materials are already reported superconductors:
