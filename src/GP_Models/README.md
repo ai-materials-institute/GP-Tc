@@ -111,13 +111,18 @@ GP_Models/
 
 ## Prerequisites
 
-Ensure you have the following Python packages installed:
-*   `torch`
-*   `gpytorch`
-*   `numpy`
-*   `scikit-learn`
+From the repository root, install the Python dependencies in a regular virtual environment:
 
-**Note**: A GPU is recommended for faster training and prediction, especially with large datasets or batch sizes.
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+If your system needs a specific CPU-only or CUDA-enabled PyTorch build, install `torch` first using the official PyTorch instructions, then install the remaining requirements.
+
+**Note**: A GPU is recommended for faster training on large datasets, but small tests and inference can run on CPU.
 
 ## Critical Note: Feature Consistency
 

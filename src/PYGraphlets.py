@@ -35,7 +35,6 @@ from pymatgen.analysis.local_env import VoronoiNN
 
 from pymatgen.core import Structure
 from pymatgen.io.cif import CifParser
-import matplotlib.pyplot as plt
 import re
 from scipy.stats import kurtosis
 from collections import defaultdict
@@ -44,9 +43,6 @@ from collections import defaultdict
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer, PointGroupAnalyzer
 from pymatgen.core.structure import Molecule
 import pandas as pd
-
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 
 class Create_Graphlets:

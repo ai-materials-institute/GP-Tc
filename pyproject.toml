@@ -8,6 +8,7 @@ license = { file = "LICENSE" }
 dependencies = [
     "numpy==2.0.1",
     "pandas==2.3.3",
+    "xlrd==2.0.2",
     "pymatgen==2025.10.7",
     "spglib==2.6.0",
     "torch==2.5.1",

@@ -17,15 +17,31 @@ Both scripts process materials from CSV files and check if they are known superc
 
 ### Setup
 
-**Method 1: Conda environment variable (persists across sessions)**
+Create and activate a regular Python environment from the repository root if you have not already done so:
+
 ```bash
-conda env config vars set EDISON_API_KEY=your_api_key_here
-conda activate sci-llm  # Reactivate to apply the environment variable
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 ```
 
-**Method 2: Current session only**
+On Windows PowerShell, activate the environment with:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+Set your API key in the shell you are using:
+
 ```bash
 export EDISON_API_KEY="your_api_key_here"
+```
+
+Or in PowerShell:
+
+```powershell
+$env:EDISON_API_KEY="your_api_key_here"
 ```
 
 ### Usage
@@ -100,24 +116,16 @@ This script (`pred.py`) queries the Google Gemini API to identify related superc
 
 ```bash
 # From the repository root
-uv sync --extra gemini
+python -m pip install -r requirements.txt
 ```
 
-If you prefer to reuse an existing conda environment such as `torchgpu`, activate it first and let
-`uv` install into the active environment:
+If you want to install the Gemini client explicitly or separately:
 
 ```bash
-conda activate torchgpu
-uv sync --active --inexact --extra gemini
+python -m pip install google-genai
 ```
 
 **Note:** This script uses the new [Google Gen AI SDK](https://googleapis.github.io/python-genai/) (`google-genai` package), which is the modern replacement for `google-generativeai`.
-
-For the Edison workflow, install the optional extra from the repository root:
-
-```bash
-uv sync --extra edison
-```
 
 #### 2. Set API Key
 
@@ -131,6 +139,13 @@ Or alternatively:
 
 ```bash
 export GOOGLE_API_KEY="your-api-key-here"
+```
+
+PowerShell equivalents:
+
+```powershell
+$env:GEMINI_API_KEY="your-api-key-here"
+$env:GOOGLE_API_KEY="your-api-key-here"
 ```
 
 ### Usage
@@ -270,7 +285,7 @@ cd src/precendent_search
 # Process all materials
 python query_materials_with_edison.py
 
-# Or process specific batches in parallel
+# Or process specific batches in parallel in separate terminals or jobs
 python query_materials_with_edison.py --batch-number 1 &
 python query_materials_with_edison.py --batch-number 2 &
 ```
@@ -289,7 +304,7 @@ python pred.py --batch-size 5 --batch-number 1
 # Process all batches (38,862 rows with batch size 100 = 389 batches)
 python pred.py --batch-size 100
 
-# Or process specific batches in parallel (e.g., on a cluster)
+# Or process specific batches in parallel in separate terminals or jobs
 python pred.py --batch-number 1 --batch-size 100 &
 python pred.py --batch-number 2 --batch-size 100 &
 ```

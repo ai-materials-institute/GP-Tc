@@ -181,7 +181,6 @@ def GP_prediction(hist_feats, symm_feats, scaler, model, likelihood):
     X_rescaled = X_rescaled.reshape(X_rescaled.size(0), -1)
     X_rescaled = torch.cat((symm_feats, X_rescaled), -1)  # [sg | flat_hist]
 
-    print(X_rescaled.shape)
     with torch.no_grad():
         GP_out = likelihood(model(X_rescaled))
         GP_stddev = GP_out.stddev.cpu()

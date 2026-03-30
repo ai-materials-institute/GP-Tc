@@ -11,6 +11,95 @@ The pipeline consists of four main stages:
 3. **Prediction** (`src/GP_Models/`): Apply trained models to new materials
 4. **Literature Search** (`src/precendent_search/`): Check whether candidate materials already appear in superconductivity literature
 
+## System Requirements
+
+### Tested Environment
+
+- **Operating system tested:** `macOS 26.2` on `arm64`
+- **Python tested:** `CPython 3.11.14`
+- **Project environment:** defined in `pyproject.toml` and locked in `uv.lock`
+
+### Core Software Dependencies
+
+- `numpy==2.0.1`
+- `pandas==2.3.3`
+- `xlrd==2.0.2`
+- `pymatgen==2025.10.7`
+- `spglib==2.6.0`
+- `torch==2.5.1`
+- `gpytorch==1.14.2`
+- `scikit-learn==1.7.2`
+- `scipy==1.16.0`
+- `matplotlib==3.10.6`
+- `seaborn==0.13.2`
+- `networkx==3.5`
+- `POT==0.9.6.post1`
+- `wandb==0.22.3`
+
+### Optional Dependencies
+
+- `botorch==0.16.1` and `pyro-ppl==1.9.1` for advanced training workflows
+- `google-genai==1.69.0` for Gemini-based literature search
+- `edison-client==0.11.0` for Edison PRECEDENT queries
+
+### Hardware Requirements
+
+- **Required for demo and inference:** standard CPU-only desktop or laptop
+- **Recommended for model training:** GPU for faster training on large datasets
+- **Training hardware used for the published models:** `NVIDIA RTX A5000 GPU`
+- **Non-standard hardware required:** none for the included demo
+
+## Installation
+
+GP-Tc is designed to run in a standard Python environment; it does not require cluster-specific modules, scheduler commands, or site-specific paths.
+
+```bash
+git clone https://github.com/ai-materials-institute/GP-Tc.git
+cd GP-Tc
+
+uv sync
+source .venv/bin/activate
+```
+
+On Windows, activate the environment with:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+If you want the optional literature-search and advanced-training extras as part of the `uv` environment, install them with:
+
+```bash
+uv sync --extra gemini --extra edison --extra advanced-training
+```
+
+**Typical install time on a normal desktop computer:** A fresh `uv sync` completed in `9.29 s` on the tested machine. Installation time on other systems may vary with network speed and package caching. See `RUNTIMES.md` for the measured commands and timings.
+
+**Typical hardware guidance:**
+- Single-CIF prediction and feature generation work on CPU.
+- Model training is faster on a GPU, but a cluster is not required.
+
+## Demo
+
+The repository includes a small demo CIF file at `data/Nd0.8Sr0.2NiO2_synth_doped.cif`.
+
+Run the demo after installation with:
+
+```bash
+source .venv/bin/activate
+python src/predict_single_cif.py data/Nd0.8Sr0.2NiO2_synth_doped.cif
+```
+
+Expected output:
+
+```text
+Formula:               Sr0.2Nd0.8Ni1O2
+Probability:           0.6203
+Predicted Tc:          15.82 K
+```
+
+Expected demo runtime on a normal desktop computer: approximately `273.40 s` (`4.56 min`) wall-clock time on the tested machine. See `RUNTIMES.md` for the full output and measured timing details.
+
 ## Quick Start: Making Predictions
 
 ### Option 1: Command-Line Prediction (Single CIF)
@@ -94,7 +183,7 @@ python general_example_gp_classification.py \
 
 See [`src/GP_Models/sc_train_gp-main/README.md`](src/GP_Models/sc_train_gp-main/README.md) for all training options.
 
-**Training hardware note:** The GP models were trained on an `NVIDIA RTX A5000 GPU`.
+**Training hardware note:** The published models were trained on a GPU, but you can still run smaller experiments and inference on CPU.
 
 For detailed Figure 2 GP regression replication code and run instructions, see [`src/GP_Models/sc_train_gp-main/replication/README.md`](src/GP_Models/sc_train_gp-main/replication/README.md).
 
@@ -117,11 +206,45 @@ python pred.py --prompt related
 
 See [`src/precendent_search/README.md`](src/precendent_search/README.md) for setup, API keys, prompts, and batch-processing details.
 
+## Instructions for Use
+
+### Run on Your Own CIF File
+
+```bash
+source .venv/bin/activate
+python src/predict_single_cif.py /path/to/your/structure.cif
+```
+
+### Run on Many CIF Files
+
+Use `main/Feature_Maker.py` to generate features for a directory of CIF files, then use the GP prediction scripts on the generated feature files. See `main/README.md` and `src/GP_Models/README.md` for the detailed batch workflow.
+
+### Literature Search
+
+The literature-search tools live under `src/precendent_search/`. They require API credentials and optional dependencies; see `src/precendent_search/README.md`.
+
+## Reproducibility
+
+To reproduce the quantitative GP training workflows and associated replication artifacts:
+
+- Use the training commands documented in `src/GP_Models/sc_train_gp-main/README.md`
+- Use the Figure 2 replication workflow documented in `src/GP_Models/sc_train_gp-main/replication/README.md`
+- Training data files are expected under `data/`, including:
+  - `data/regression_data_histogram&symmetry.pkl`
+  - `data/classification_data_3DSCnonsc_labeled.pkl`
+
+The included demo CIF is intended for installation and inference validation rather than full training reproduction.
+
+The published GP models were trained on an `NVIDIA RTX A5000 GPU`.
+
 ## Repository Structure
 
 ```
 .
+├── RUNTIMES.md                    # Measured install and demo runtimes
 ├── FEATURE_INDEX_MAPPING.md         # 📋 Feature index to name mapping
+├── pyproject.toml                 # Pinned project dependencies for `uv`
+├── uv.lock                        # Locked dependency resolution
 ├── config/                          # Configuration files
 │   ├── atomic_radii.json           # Atomic radii for graphlet construction
 │   ├── Filtered_atomic_features.json  # Element features
@@ -154,52 +277,20 @@ See [`src/precendent_search/README.md`](src/precendent_search/README.md) for set
 │       └── README.md               # GP workflow documentation
 │
 └── data/                            # Data directory
+    ├── README.md                    # Demo-data notes
     ├── classification_data_3DSCnonsc_labeled.pkl  # Training data for classification
+    ├── Nd0.8Sr0.2NiO2_synth_doped.cif  # Included demo CIF for inference
     ├── regression_data_histogram&symmetry.pkl     # Training data for regression
     ├── ICSD/
     │   └── CIFS/                   # Input CIF files
     └── Pickled_ICSD_Histograms/    # Pre-computed graphlets (optional)
 ```
 
-## Dependencies
+## Dependency Manifests
 
-### Core Requirements
-- Python 3.8+
-- `numpy`
-- `pandas`
-- `pymatgen`
-- `spglib`
-- `torch`
-- `gpytorch`
-- `scikit-learn`
-
-### Installation
-```bash
-# Create a project-local virtual environment
-uv sync
-
-# Or reuse an existing conda environment, e.g. torchgpu
-conda activate torchgpu
-uv sync --active --inexact
-```
-
-`pyproject.toml` pins the base dependency set to the versions currently installed in the
-`torchgpu` Python 3.11 environment. If you are working inside that CUDA-enabled conda environment,
-`uv sync --active --inexact` is the safer option because it layers the project dependencies onto
-the active environment without aggressively removing conda-managed packages.
-
-### Optional Extras
-- `gemini` for `src/precendent_search/pred.py`
-- `edison` for `src/precendent_search/query_materials_with_edison.py`
-- `advanced-training` for the SAAS / Pyro-based GP training code
-
-Install optional extras when needed:
-
-```bash
-uv sync --extra gemini
-uv sync --extra edison
-uv sync --extra advanced-training
-```
+- `pyproject.toml` and `uv.lock` define the tested project environment
+- `requirements.txt` is kept for compatibility with `pip`-based workflows
+- If you only want the core prediction pipeline, you can ignore API-key setup until you use the literature-search tools
 
 ## Key Features
 
